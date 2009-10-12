@@ -25,6 +25,10 @@ class Mocksmtpd
       exit
     end
 
+    @opt.on("--silent", "Suppress all output") do
+      @silent = true
+    end
+
     @opt.parse!(argv)
 
     if argv.empty?
@@ -102,17 +106,17 @@ class Mocksmtpd
 
   def init
     Dir.mkdir(@init_dir)
-    puts "Created: #{@init_dir}/"
+    puts "Created: #{@init_dir}/" unless @silent
     path = Pathname.new(@init_dir)
     Dir.mkdir(path + "inbox")
-    puts "Created: #{path + 'inbox'}/"
+    puts "Created: #{path + 'inbox'}/" unless @silent
     Dir.mkdir(path + "log")
-    puts "Created: #{path + 'log'}/"
+    puts "Created: #{path + 'log'}/" unless @silent
 
     open(path + "mocksmtpd.conf", "w") do |io|
       io << template("mocksmtpd.conf").result(binding)
     end
-    puts "Created: #{path + 'mocksmtpd.conf'}"
+    puts "Created: #{path + 'mocksmtpd.conf'}" unless @silent
   end
 
   def stop
@@ -136,6 +140,7 @@ class Mocksmtpd
     file = file.to_s.strip
     file = nil if file.empty?
     lvstr = @conf[:LogLevel].to_s.strip
+    lvstr = "ERROR" if @silent
     lvstr = "INFO" unless %w{FATAL ERROR WARN INFO DEBUG}.include?(lvstr)
     level = WEBrick::BasicLog.const_get(lvstr)
     logger = WEBrick::Log.new(file, level)
