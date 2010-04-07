@@ -131,9 +131,10 @@ class Mocksmtpd
     end
 
     pid = File.read(@pidfile)
-    print "Stopping #{pid}..."
-    system "kill -TERM #{pid}"
-    puts "done"
+    print "Stopping #{pid}..." unless @silent
+    #system "kill -TERM #{pid}"
+    system "taskkill /F /PID #{pid} 1>NUL"
+    puts "done" unless @silent
   end
 
   def create_logger(file = nil)
@@ -198,14 +199,12 @@ class Mocksmtpd
   def smtpd
     start_cb = Proc.new do
       @logger.info("Inbox: #{@inbox}")
-      if @daemon
-        @logger.debug("LogFile: #{@logfile}")
-        @logger.debug("PidFile: #{@pidfile}")
-      end
+      @logger.debug("LogFile: #{@logfile}")
+      @logger.debug("PidFile: #{@pidfile}")
 
       begin
         init_permission
-        create_pid_file if @daemon
+        create_pid_file #if @daemon
       rescue => e
         @logger.error("Start: #{e}")
         raise e
@@ -214,7 +213,7 @@ class Mocksmtpd
 
     stop_cb = Proc.new do
       begin
-        delete_pid_file if @daemon
+        delete_pid_file #if @daemon
       rescue => e
         @logger.error("Stop: #{e}")
         raise e
