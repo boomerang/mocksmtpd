@@ -11,7 +11,7 @@ require 'fileutils'
 require 'lib/mocksmtpd'
 include FileUtils
 
-NAME              = "mocksmtpd"
+NAME              = "boomerang-mocksmtpd"
 AUTHOR            = "KOSEKI Kengo"
 EMAIL             = "koseki@gmail.com"
 DESCRIPTION       = "Mock SMTP server for development/testing."
