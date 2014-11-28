@@ -134,6 +134,7 @@ class Mocksmtpd
     print "Stopping #{pid}..." unless @silent
     #system "kill -TERM #{pid}"
     system "taskkill /F /PID #{pid} 1>NUL"
+    File.delete(@pidfile) if File.exist?(@pidfile)
     puts "done" unless @silent
   end
 
