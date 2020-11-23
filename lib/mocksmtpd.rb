@@ -132,8 +132,11 @@ class Mocksmtpd
 
     pid = File.read(@pidfile)
     print "Stopping #{pid}..." unless @silent
-    #system "kill -TERM #{pid}"
-    system "taskkill /F /PID #{pid} 1>NUL"
+    if RbConfig::CONFIG['host_os'] =~ /mswin|mingw/
+      system "taskkill /F /PID #{pid} 1>NUL"
+    else
+      system "kill -TERM #{pid} 1>NUL"
+    end
     File.delete(@pidfile) if File.exist?(@pidfile)
     puts "done" unless @silent
   end
